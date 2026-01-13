@@ -1,36 +1,29 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout Code') {
+        stage("Clean Up"){
             steps {
-                echo 'Pulling code from GitHub...'
-                git branch: 'main', url: 'https://github.com/subbasri17/Jenkins-Practice.git'
+                deleteDir()
             }
         }
-
-        stage('Build') {
+        stage("Clone Repo"){
             steps {
-                echo 'Building the app...'
-                sh 'mvn clean package'
+                sh "git clone https://github.com/subbasri17/Jenkins-Practice.git"
             }
         }
-
-        stage('Test') {
+        stage("Build"){
             steps {
-                echo 'Running tests...'
-                sh 'mvn test'
+                dir("Jenkins-Practice") {
+                    sh "mvn clean install"
+                }
             }
         }
-
-        stage('Deploy') {
+        stage("Test"){
             steps {
-                echo 'Deploying JAR to production...'
-                sh 'mkdir -p /tmp/apps && cp target/my-sample-app-1.0-SNAPSHOT.jar /tmp/apps/ && echo "Deployment successful: JAR copied to /tmp/apps/"'
+                dir("Jenkins-Practice") {
+                    sh "mvn test"
+                }
             }
-        }
+        }  
     }
 }
-
-
-
